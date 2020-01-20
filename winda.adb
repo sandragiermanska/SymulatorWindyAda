@@ -4,6 +4,9 @@
 with Ada.Text_IO;
 use Ada.Text_IO;
 
+with Ada.Containers.Doubly_Linked_Lists;
+--use Ada.Containers.Doubly_Linked_Lists;
+
 -- procedura główna
 procedure Winda is
 
@@ -27,6 +30,19 @@ procedure Winda is
    przyciskiDolWcisniete : PrzyciskiDol := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 
+   package Int_List is new Ada.Containers.Doubly_Linked_Lists(Integer);
+   --use Doubly_Linked_Lists;
+   TrasaWindy1Pietra : Int_List.List;
+
+   package Bool_List is new Ada.Containers.Doubly_Linked_Lists(Boolean);
+   --use Bool_Fifo;
+   TrasaWindy1Postoj : Bool_List.List;
+
+   --type TrasaWindy1Pietra is array(1..33) of Integer;
+   --type TrasaWindy1Postoj is array(1..33) of Boolean;
+   indeksPoczatek : Integer := 1;
+   indeksKoniec : Integer := 1;
+
    --czy drzwi windy sa otwarte
    otwarte : Boolean := False;
 
@@ -49,7 +65,20 @@ procedure Winda is
 	end SterownikWindy;
 
 	task body SterownikWindy is
+		k : KierunekRuchu;
 	begin
+		accept dodajDoKolejki(kierunek : KierunekRuchu; pietro: Integer; pietroKoniec: Integer; nrWindy : Integer) do
+			--i := TrasaWindy1Pietra.Length;
+			for i in Ada.Containers.Count_Type range 1..TrasaWindy1Pietra.Length loop
+null;
+--			while (i > indeksPoczatek or i < indeksKoniec) i in range indeksPoczatek..indeksKoniec loop
+--				if (i == indeksKoniec) then
+--					
+--				k := 
+--				if (TrasaWindy1Pietra(i) == pietro) then
+--					TrasaWindy1Postoj(i) := True;
+			end loop;
+		end dodajDoKolejki;
 	null;
 	end SterownikWindy;
 
