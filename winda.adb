@@ -93,6 +93,16 @@ procedure winda is
    type PietraId is array(1..iloscPieter) of Integer;
    pietraLudzieId : PietraId := (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
+
+
+
+
+
+
+
+
+
+
 ----------------
 -----Winda1-----
 ----------------
@@ -102,6 +112,7 @@ procedure Winda1 is
     rek : Rekord;
     listaOsobNaPietrze : Osoba_List;
 begin   
+        Put_Line("Winda zaczyna prace");
     while True loop
         if (TrasaWindy1Pietra.Is_Empty) then
             delay(0.5);
@@ -130,6 +141,7 @@ begin
                         Put_Line("Osoba " & listaOsobNaPietrze(i).id'Img & " wsiada i chce jechac na pietro: " & listaOsobNaPietrze(i).pietroKoniec'Img);
                         osobyWWindzie.Append(listaOsobNaPietrze(i));
                         listaOsobNaPietrze(i).id := 0;
+			--delete osob na pietrze
                     end if;
                end loop;
                
@@ -146,6 +158,12 @@ begin
         end loop;
 end Winda1;
 
+
+
+
+
+
+
 ----------------
 ---Sterownik----
 ------Windy-----
@@ -161,18 +179,22 @@ task body SterownikWindy is
     element : Rekord;
 begin
     loop
+        select
             accept dodajDoKolejki(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer) do
+		czyWziela := False;
+		czyWysadzila := False;
                 if (TrasaWindy1Pietra.Is_Empty) then
                     element.pietro := pietroStart;
                     element.postoj := True;
                     element.kierunek := kierunek;
                     TrasaWindy1Pietra.Append(element);
-                end if;
+			czyWziela := True;
+                else 
                 
                 for i in TrasaWindy1Pietra.Iterate loop
                     if (not czyWziela) then
                         if (TrasaWindy1Pietra(i).pietro = pietroStart) then
-                            if (TrasaWindy1Pietra(i).kierunek = kierunek) then
+                            if (TrasaWindy1Pietra(i).kierunek = kierunek or kierunek = Brak or TrasaWindy1Pietra(i).postoj = True) then
                                 TrasaWindy1Pietra(i).postoj := True;
                                 czyWziela := True;
                             end if;
@@ -180,12 +202,12 @@ begin
                     elsif (not czyWysadzila and TrasaWindy1Pietra(i).pietro = pietroKoniec) then
                         TrasaWindy1Pietra(i).postoj := True;
                         czyWysadzila := True;
-                    end if;
+		    end if;
                 end loop;
 
                 if (not czyWziela) then
                     if (TrasaWindy1Pietra.Last_Element.pietro > pietroStart) then
-                        for j in TrasaWindy1Pietra.Last_Element.pietro..pietroStart loop
+                        for j in reverse (TrasaWindy1Pietra.Last_Element.pietro-1)..pietroStart loop
                             element.pietro := j;
                             element.postoj := False;
                             element.kierunek := Dol;
@@ -193,24 +215,26 @@ begin
                         end loop;
                     
                         TrasaWindy1Pietra(TrasaWindy1Pietra.Last).postoj := True;
+                        TrasaWindy1Pietra(TrasaWindy1Pietra.Last).kierunek := Brak;
                         czyWziela := True;
             
                     else
-                        for k in TrasaWindy1Pietra.Last_Element.pietro..pietroStart loop
+                        for k in (TrasaWindy1Pietra.Last_Element.pietro+1)..pietroStart loop
                             element.pietro := k;
                             element.postoj := False;
                             element.kierunek := Gora;
                             TrasaWindy1Pietra.Append(element);
                         end loop;
                 
-                        TrasaWindy1Pietra(TrasaWindy1Pietra.Last).postoj := True;
+                        TrasaWindy1Pietra(TrasaWindy1Pietra.Last).kierunek := kierunek;
                         czyWziela := True;
                     end if;
                 end if;
-
+end if;
                 if (not czyWysadzila) then
                     if (TrasaWindy1Pietra.Last_Element.pietro > pietroKoniec) then
-                        for j in TrasaWindy1Pietra.Last_Element.pietro..pietroKoniec loop
+                      
+                        for j in reverse pietroKoniec..TrasaWindy1Pietra.Last_Element.pietro loop
                             element.pietro := j;
                             element.postoj := False;
                             element.kierunek := Dol;
@@ -218,9 +242,10 @@ begin
                         end loop;
                
                         TrasaWindy1Pietra(TrasaWindy1Pietra.Last).postoj := True;
+                        TrasaWindy1Pietra(TrasaWindy1Pietra.Last).kierunek := Brak;
                         czyWysadzila := True;
                     else
-                        for k in TrasaWindy1Pietra.Last_Element.pietro..pietroKoniec loop
+		    for k in TrasaWindy1Pietra.Last_Element.pietro..pietroKoniec loop
                             element.pietro := k;
                             element.postoj := False;
                             element.kierunek := Gora;
@@ -231,11 +256,25 @@ begin
                         czyWysadzila := True;
                     end if;
                 end if;
-                
+     
             end dodajDoKolejki;
-
+        end select;
     end loop;
 end SterownikWindy;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ----------------
 ---Sterownik----
@@ -250,6 +289,7 @@ task body SterownikGlowny is
       os : Osoba;
 begin
     loop 
+        select
             accept nowaOsoba(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer) do
                 os.id := idOsoby;
                 idOsoby := idOsoby + 1;
@@ -260,6 +300,7 @@ begin
                 pietraLudzieId(pietroStart) := (pietraLudzieId(pietroStart) + 1) mod 10 + 1;
                 SterownikWindy.dodajDoKolejki(kierunek, pietroStart, pietroKoniec);
             end nowaOsoba;
+        end select;
     end loop;
 end SterownikGlowny;
 
@@ -268,16 +309,16 @@ end SterownikGlowny;
 -----------------
 
 task Test is
-    entry Test1(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer);
+    entry Start(kierunek : in KierunekRuchu; pietroStart : in Integer; pietroKoniec : in Integer);
 end Test;
 
 task body Test is
 begin
     loop
         select
-            accept Test1(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer) do
+            accept Start(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer) do
                 SterownikGlowny.nowaOsoba(kierunek, pietroStart, pietroKoniec);
-            end Test1;
+            end Start;
         end select;
     end loop;
 end Test;
@@ -286,6 +327,11 @@ end Test;
 ------Start------
 -----------------
 begin
-   Test.Test1(Gora, 1, 4);
-   Test.Test1(Gora, 2, 4);
+
+   Test.Start(Gora, 1, 4);
+   Test.Start(Gora, 2, 4);
+   Test.Start(Dol, 3, 1);
+   --Test.Test1;
+   Winda1;
+
 end winda;
