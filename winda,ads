@@ -1,0 +1,16 @@
+package winda is
+
+   procedure Winda1;
+   
+   procedure Test1;
+   procedure Test2;
+   procedure Test3;
+   procedure Test4;
+   procedure Test5;
+   procedure Test6;
+   
+   task SterownikGlowny;
+   task Test;
+   task SterownikWindy;
+
+end winda;
