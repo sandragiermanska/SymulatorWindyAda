@@ -103,7 +103,6 @@ procedure Winda1 is
     listaOsobNaPietrze : Osoba_List;
 begin   
     while True loop
-        Put_Line("Winda zaczyna prace");
         if (TrasaWindy1Pietra.Is_Empty) then
             delay(0.5);
             Put_Line("Winda czeka na wezwanie");
@@ -162,7 +161,6 @@ task body SterownikWindy is
     element : Rekord;
 begin
     loop
-        select
             accept dodajDoKolejki(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer) do
                 if (TrasaWindy1Pietra.Is_Empty) then
                     element.pietro := pietroStart;
@@ -233,9 +231,9 @@ begin
                         czyWysadzila := True;
                     end if;
                 end if;
-     
+                
             end dodajDoKolejki;
-        end select;
+
     end loop;
 end SterownikWindy;
 
@@ -252,7 +250,6 @@ task body SterownikGlowny is
       os : Osoba;
 begin
     loop 
-        select
             accept nowaOsoba(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer) do
                 os.id := idOsoby;
                 idOsoby := idOsoby + 1;
@@ -263,7 +260,6 @@ begin
                 pietraLudzieId(pietroStart) := (pietraLudzieId(pietroStart) + 1) mod 10 + 1;
                 SterownikWindy.dodajDoKolejki(kierunek, pietroStart, pietroKoniec);
             end nowaOsoba;
-        end select;
     end loop;
 end SterownikGlowny;
 
@@ -272,16 +268,16 @@ end SterownikGlowny;
 -----------------
 
 task Test is
-    entry Start(kierunek : in KierunekRuchu; pietroStart : in Integer; pietroKoniec : in Integer);
+    entry Test1(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer);
 end Test;
 
 task body Test is
 begin
     loop
         select
-            accept Start(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer) do
+            accept Test1(kierunek : KierunekRuchu; pietroStart : Integer; pietroKoniec : Integer) do
                 SterownikGlowny.nowaOsoba(kierunek, pietroStart, pietroKoniec);
-            end Start;
+            end Test1;
         end select;
     end loop;
 end Test;
@@ -290,8 +286,6 @@ end Test;
 ------Start------
 -----------------
 begin
-   Test.Start(Gora, 1, 4);
-   Test.Start(Gora, 2, 4);
-   --Test.Test1;
-   Winda1;
+   Test.Test1(Gora, 1, 4);
+   Test.Test1(Gora, 2, 4);
 end winda;
