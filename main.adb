@@ -152,6 +152,7 @@ procedure dodajDoKolejki(kierunek : KierunekRuchu; pietroStart : Integer; pietro
              element.kierunek := kierunek;
              TrasaWindy1Pietra.Append(element);
          end if;
+         
          for i in TrasaWindy1Pietra.Iterate loop
             if (not czyWziela) then
                if (TrasaWindy1Pietra(i).pietro = pietroStart) then
@@ -160,11 +161,13 @@ procedure dodajDoKolejki(kierunek : KierunekRuchu; pietroStart : Integer; pietro
                      czyWziela := True;
                   end if;
                end if;
+               
             elsif (not czyWysadzila and TrasaWindy1Pietra(i).pietro = pietroKoniec) then
                TrasaWindy1Pietra(i).postoj := True;
                czyWysadzila := True;
-         end if;
+            end if;
          end loop;
+         
          if (not czyWziela) then
             if (TrasaWindy1Pietra.Last_Element.pietro > pietroStart) then
                for j in TrasaWindy1Pietra.Last_Element.pietro..pietroStart loop
@@ -181,9 +184,11 @@ procedure dodajDoKolejki(kierunek : KierunekRuchu; pietroStart : Integer; pietro
                   element.postoj := False;
                   element.kierunek := Gora;
                   TrasaWindy1Pietra.Append(element);
-               end loop;
-               TrasaWindy1Pietra(TrasaWindy1Pietra.Last).postoj := True;
-               czyWziela := True;
+            end loop;
+            
+            TrasaWindy1Pietra(TrasaWindy1Pietra.Last).postoj := True;
+            czyWziela := True;
+            
             end if;
          end if;
 
@@ -204,8 +209,10 @@ procedure dodajDoKolejki(kierunek : KierunekRuchu; pietroStart : Integer; pietro
                   element.kierunek := Gora;
                   TrasaWindy1Pietra.Append(element);
                end loop;
+               
                TrasaWindy1Pietra(TrasaWindy1Pietra.Last).postoj := True;
                czyWysadzila := True;
+               
             end if;
          end if;
 end dodajDoKolejki;
@@ -232,15 +239,100 @@ end nowaOsoba;
 ------Testy------
 -----------------
 
-procedure Test is
+procedure Test1 is
    begin
          nowaOsoba(Gora, 1, 4);
-end Test;
+         nowaOsoba(Gora, 2, 4);
+         nowaOsoba(Dol, 3, 2);
+end Test1;
+
+procedure Test2 is
+   begin
+         nowaOsoba(Dol, 9, 4);
+         nowaOsoba(Dol, 8, 5);
+         nowaOsoba(Gora, 3, 7);
+         nowaOsoba(Dol, 3, 1);
+         nowaOsoba(Gora, 4, 8);
+end Test2;
+
+procedure Test3 is
+   begin
+         nowaOsoba(Dol, 2, 9);
+         nowaOsoba(Gora, 3, 5);
+         nowaOsoba(Gora, 4, 6);
+         nowaOsoba(Dol, 6, 2);
+         nowaOsoba(Dol, 5, 4);
+         nowaOsoba(Dol, 5, 3);
+         nowaOsoba(Dol, 2, 1);
+         nowaOsoba(Gora, 1, 3);
+end Test3;
+
+procedure Test4 is
+   begin
+         nowaOsoba(Dol, 9, 4);
+         nowaOsoba(Gora, 1, 3);
+         nowaOsoba(Dol, 7, 5);
+         nowaOsoba(Gora, 2, 7);
+         nowaOsoba(Dol, 5, 4);
+end Test4;
+
+procedure Test5 is
+   begin
+         nowaOsoba(Dol, 9, 4);
+         nowaOsoba(Dol, 7, 2);
+         nowaOsoba(Dol, 8, 4);
+         nowaOsoba(Dol, 5, 3);
+         nowaOsoba(Dol, 3, 1);
+end Test5;
+
+procedure Test6 is
+   begin
+         nowaOsoba(Gora, 7, 8);
+         nowaOsoba(Gora, 1, 3);
+         nowaOsoba(Gora, 2, 5);
+         nowaOsoba(Gora, 5, 7);
+         nowaOsoba(Gora, 3, 4);
+end Test6;
 
 -----------------
 ------Start------
 -----------------
 begin
-   Test;
-   Winda1;
+    Put_Line("Testowanie symulatora ruchu windy");
+
+    Put_Line("Test 1: 1 -> 2 -> 4 -> 3 -> 2");
+    Test1;
+    Winda1;
+    Put_Line("");
+    delay(5.0);
+    
+    Put_Line("Test 2: 1 -> 9 -> 8 -> 5 -> 4 -> 3 -> 1 -> 3 -> 4 -> 7 -> 8");
+    Test2;
+    Winda1;
+    Put_Line("");
+    delay(5.0);
+    
+    Put_Line("Test 3: 1 -> 2 -> 9 -> 3 -> 4 -> 5 -> 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 3");
+    Test3;
+    Winda1;
+    Put_Line("");
+    delay(5.0);
+    
+    Put_Line("Test 4: 1 -> 9 -> 7 -> 5 -> 4 -> 1 -> 2 -> 3 -> 7");
+    Test4;
+    Winda1;
+    Put_Line("");
+    delay(5.0);
+    
+    Put_Line("Test 5: 1 -> 9 -> 8 -> 7 -> 5 -> 4 -> 3 -> 2 -> 1");
+    Test5;
+    Winda1;
+    Put_Line("");
+    delay(5.0);
+    
+    Put_Line("Test 6: 1 -> 2 -> 3 -> 4 -> 5 -> 7 -> 8");
+    Test6;
+    Winda1;
+    Put_Line("");
+    delay(5.0);
 end main;
